@@ -57,7 +57,7 @@ The system maintained data integrity over a sustained 1MHz SPI clock without gli
 
 ## How To Run
 
-1. FPGA Setup (Vivado)
+FPGA Setup (Vivado)
 Open Project: Create a new project in Vivado targeting the Artix-7 XC7A35T-1CPG236C (Basys 3).
 
 Add Sources: Import all .sv files from the hdl/ directory.
@@ -66,7 +66,7 @@ Constraints: Add the basys3_master.xdc from the constraints/ folder.
 
 Generate Bitstream: Click Generate Bitstream, then use the Hardware Manager to program the board
 
-2. Software Setup (Arduino IDE)
+Software Setup (Arduino IDE)
 Library: Ensure you have the ESP32 board package installed.
 
 Upload: Open software/esp32_master.ino, select your ESP32 board/port and click Upload.
