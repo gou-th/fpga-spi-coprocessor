@@ -1,5 +1,3 @@
-# FPGA SPI Coprocessor (MAC & CDC)
-
 ## Project Overview
 This project implements a hardware-accelerated **Arithmetic Logic Unit (ALU)** on a Xilinx Artix-7 FPGA (Basys 3). It communicates with an ESP32 microcontroller via a standard **SPI Interface**.
 
