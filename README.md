@@ -38,7 +38,39 @@ The system accepts 24-bit packets: `[Opcode (8)] [Operand A (8)] [Operand B (8)]
 | **CS** | `G2` | Pin 4 | GPIO 5 |
 | **GND** | `GND` | Pin 5 | GND |
 
-## Verification
+## Simulation Verification
 The design includes a self-checking testbench (`tb_spi_coprocessor.sv`) that validates:
 * 100% of Opcodes.
 * Timing of the SPI Shift Register.
+
+## Hardware Verification 
+The bitstream was deployed to Basys 3 board. The physical results were verified by observing the onboard LEDs
+
+# Verification Results
+During the test run, values were changed in the MAC operation and the result was confirmed via the LEDs and the Serial Monitor:
+
+Case 1: The LEDs displayed 0010 1010 (Decimal 42).
+
+Case 2: The LEDs displayed 0011 0110 (Decimal 54).
+
+The system maintained data integrity over a sustained 1MHz SPI clock without glitches, confirming that the CDC (Clock Domain Crossing) logic is functioning correctly.
+
+## How To Run
+
+1. FPGA Setup (Vivado)
+Open Project: Create a new project in Vivado targeting the Artix-7 XC7A35T-1CPG236C (Basys 3).
+
+Add Sources: Import all .sv files from the hdl/ directory.
+
+Constraints: Add the basys3_master.xdc from the constraints/ folder.
+
+Generate Bitstream: Click Generate Bitstream, then use the Hardware Manager to program the board
+
+2. Software Setup (Arduino IDE)
+Library: Ensure you have the ESP32 board package installed.
+
+Upload: Open software/esp32_master.ino, select your ESP32 board/port and click Upload.
+
+Monitor: Open the Serial Monitor and set the baud rate to 115200.
+
+
