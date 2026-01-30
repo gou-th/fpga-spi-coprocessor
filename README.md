@@ -9,15 +9,7 @@ This project implements a hardware-accelerated **Arithmetic Logic Unit (ALU)** o
 
 The core logic offloads computationally intensive tasks—specifically **Multiply-Accumulate (MAC)** operations used in Signal Processing—from the microcontroller to the FPGA. The design features **Clock Domain Crossing (CDC)** to ensure reliable data transfer between the 100MHz FPGA clock and the asynchronous SPI bus.
 
-## Performance Benchmark: Hardware vs. Software
-To justify the use of an FPGA, we compared the **Turnaround Latency** (Time from "Last Command Bit Received" to "Valid Result Ready") of this hardware implementation against a standard ESP32 Software Slave implementation.
-
-| Implementation | Compute Time | Response Overhead (Jitter) | **Total Turnaround Time** |
-| :--- | :--- | :--- | :--- |
-| **FPGA (This Project)** | 10 ns (1 cycle) | +20 ns (Logic Routing) | **30 ns** |
-| **ESP32 (Software Slave)** | ~10 ns (CPU) | +1,800 ns (ISR Latency) | **~1,810 ns** |
-
-**Conclusion:** While modern microcontrollers have fast CPUs, they suffer from interrupt latency and jitter. The FPGA implementation offers ** 30ns latency**, making it way faster for real-time computations.
+To justify the use of an FPGA, while modern microcontrollers have fast CPUs, they suffer from interrupt latency and jitter. The FPGA implementation offers very low latency, making it way faster for real-time computations.
 
 ## System Architecture
 The system consists of four main SystemVerilog modules:
@@ -53,8 +45,7 @@ The system accepts 24-bit packets: `[Opcode (8)] [Operand A (8)] [Operand B (8)]
 ## Verification
 The design includes a self-checking testbench (`tb_spi_coprocessor.sv`) that validates:
 * 100% of Opcodes.
-* Timing integrity of the SPI Shift Register.
-* Automated latency calculation via system monitors.
+* Timing of the SPI Shift Register.
 
 ## How to Run
 1.  **FPGA:** Open the `hdl/` files in Vivado, add the `basys3_master.xdc` constraint and generate the bitstream.
