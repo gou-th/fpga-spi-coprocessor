@@ -46,7 +46,7 @@ The design includes a self-checking testbench (`tb_spi_coprocessor.sv`) that val
 ## Hardware Verification 
 The bitstream was deployed to Basys 3 board. The physical results were verified by observing the onboard LEDs
 
-# Verification Results
+Verification Results
 During the test run, values were changed in the MAC operation and the result was confirmed via the LEDs and the Serial Monitor:
 
 Case 1: The LEDs displayed 0010 1010 (Decimal 42).
