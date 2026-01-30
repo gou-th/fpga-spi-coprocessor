@@ -1,8 +1,6 @@
 # FPGA SPI Coprocessor (MAC & CDC)
 
-![Status](https://img.shields.io/badge/Status-Verified_in_Simulation-success)
-![Hardware](https://img.shields.io/badge/Hardware-Basys3_%2B_ESP32-blue)
-![Language](https://img.shields.io/badge/Language-SystemVerilog-orange)
+![Status](https://img.shields.io/badge/Status-Verified_only_in_Simulation-success)
 
 ## Project Overview
 This project implements a hardware-accelerated **Arithmetic Logic Unit (ALU)** on a Xilinx Artix-7 FPGA (Basys 3). It communicates with an ESP32 microcontroller via a standard **SPI Interface**.
@@ -46,9 +44,3 @@ The system accepts 24-bit packets: `[Opcode (8)] [Operand A (8)] [Operand B (8)]
 The design includes a self-checking testbench (`tb_spi_coprocessor.sv`) that validates:
 * 100% of Opcodes.
 * Timing of the SPI Shift Register.
-
-## How to Run
-1.  **FPGA:** Open the `hdl/` files in Vivado, add the `basys3_master.xdc` constraint and generate the bitstream.
-2.  **ESP32:** Flash the `esp32_master.ino` code to your microcontroller.
-3.  **Connect:** Wire the PMOD JA pins to the ESP32.
-4.  **Test:** Open the Serial Monitor (115200 baud) to see the math results.
