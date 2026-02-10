@@ -12,16 +12,16 @@ While modern microcontrollers offer high clock speeds, they suffer from interrup
 
 The system is composed of four primary SystemVerilog modules:
 
-1. **[`spi_receiver.sv`](.rtl/spi_receiver.sv)**
+1. [`spi_receiver.sv`](.rtl/spi_receiver.sv)
    Deserializes MOSI data using triple flip-flop synchronizers to mitigate metastability.
 
-2. **[`alu.sv`](.rtl/alu.sv)**
+2. [`alu.sv`](.rtl/alu.sv)
    A 32-bit arithmetic core featuring a persistent accumulator supporting MAC operations along with basic arithmetic functions.
 
-3. **[`spi_transmitter.sv`](.rtl/spi_transmitter.sv)**
+3. [`spi_transmitter.sv`](.rtl/spi_transmitter.sv)
    Serializes computation results onto MISO, incorporating edge-detection logic to prevent bit-shift errors.
 
-4. **[`top.sv`](.rtl/top.sv)**
+4. [`top.sv`](.rtl/top.sv)
    Top-level module managing control flow, handshaking and single-cycle load pulses.
 
 ---
@@ -86,7 +86,7 @@ The system maintained data integrity during sustained operation at a **1 MHz SPI
 
 1. Create a new Vivado project targeting **XC7A35T-1CPG236C**.
 2. Add all `.sv` files from the `hdl/` directory.
-3. Add `basys3_master.xdc` from the [`constraints/`](./constraints) directory.
+3. Add `basys3_master.xdc` from the [`constraints`](./constraints) directory.
 4. Generate the bitstream and program the board using Hardware Manager.
 
 ### Software Setup (Arduino IDE)
