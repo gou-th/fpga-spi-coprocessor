@@ -12,16 +12,16 @@ While modern microcontrollers offer high clock speeds, they suffer from interrup
 
 The system is composed of four primary SystemVerilog modules:
 
-1. [`spi_receiver.sv`](.rtl/spi_receiver.sv)
+1. [`spi_receiver.sv`](./rtl/spi_receiver.sv)
    Deserializes MOSI data using triple flip-flop synchronizers to mitigate metastability.
 
-2. [`alu.sv`](.rtl/alu.sv)
+2. [`alu.sv`](./rtl/alu.sv)
    A 32-bit arithmetic core featuring a persistent accumulator supporting MAC operations along with basic arithmetic functions.
 
-3. [`spi_transmitter.sv`](.rtl/spi_transmitter.sv)
+3. [`spi_transmitter.sv`](./rtl/spi_transmitter.sv)
    Serializes computation results onto MISO, incorporating edge-detection logic to prevent bit-shift errors.
 
-4. [`top.sv`](.rtl/top.sv)
+4. [`top.sv`](./rtl/top.sv)
    Top-level module managing control flow, handshaking and single-cycle load pulses.
 
 ---
@@ -60,7 +60,7 @@ The system accepts fixed 24-bit SPI packets structured as:
 
 ## Simulation Verification
 
-A SystemVerilog testbench [`tb_spi_coprocessor.sv`](.rtl/tb_spi_coprocessor.sv) was developed to validate:
+A SystemVerilog testbench [`tb_spi_coprocessor.sv`](./rtl/tb_spi_coprocessor.sv) was developed to validate:
 
 * Functional correctness of all supported opcodes
 * Timing and alignment of the SPI shift register
@@ -92,7 +92,7 @@ The system maintained data integrity during sustained operation at a **1 MHz SPI
 ### Software Setup (Arduino IDE)
 
 1. Install the ESP32 board package.
-2. Open [`software/esp32_master.ino`](.software/esp32_master.ino).
+2. Open [`software/esp32_master.ino`](./software/esp32_master.ino).
 3. Select the appropriate board and port, then upload.
 4. Open the Serial Monitor at **115200 baud**.
 
