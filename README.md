@@ -97,7 +97,7 @@ The system maintained data integrity during sustained operation at a **1 MHz SPI
 4. Open the Serial Monitor at **115200 baud**.
 
 ### Folder Structure 
-
+<pre>
 spi-fpga-alu/
 ├── hdl/
 │   ├── spi_receiver.sv        # SPI MOSI deserializer with CDC handling
@@ -113,3 +113,4 @@ spi-fpga-alu/
 ├── docs/
 │   └── verification.md        # Linked waveforms and hardware verification notes
 └── README.md
+</pre>
