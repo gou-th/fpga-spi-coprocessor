@@ -1,76 +1,115 @@
 ## Project Overview
-This project implements a hardware-accelerated **Arithmetic Logic Unit (ALU)** on a Xilinx Artix-7 FPGA (Basys 3). It communicates with an ESP32 microcontroller via a standard **SPI Interface**.
 
-The core logic offloads computationally intensive tasks—specifically **Multiply-Accumulate (MAC)** operations used in Signal Processing—from the microcontroller to the FPGA. The design features **Clock Domain Crossing (CDC)** to ensure reliable data transfer between the 100MHz FPGA clock and the asynchronous SPI bus.
+This project implements a hardware-accelerated **Arithmetic Logic Unit (ALU)** on a **Xilinx Artix-7 FPGA (Basys 3)**, interfaced with an **ESP32 microcontroller** over a standard **SPI interface**.
 
-To justify the use of an FPGA, while modern microcontrollers have fast CPUs, they suffer from interrupt latency and jitter. The FPGA implementation offers very low latency, making it way faster for real-time computations.
+The system demonstrates **hardware–software co-design**, where computationally intensive operations—specifically **Multiply-Accumulate (MAC)** functions commonly used in signal processing, are offloaded from the microcontroller to a FPGA-based compute engine.
+
+While modern microcontrollers offer high clock speeds, they suffer from interrupt latency and execution jitter. The FPGA implementation provides a low-latency computation, making it significantly better suited for real-time workloads. The design incorporates proper **Clock Domain Crossing (CDC)** techniques to ensure reliable data transfer between the 100 MHz FPGA clock domain and the asynchronous SPI bus.
+
+---
 
 ## System Architecture
-The system consists of four main SystemVerilog modules:
-1.  **`spi_receiver.sv`**: Deserializes MOSI data using Triple Flip Flop Synchronizers to prevent metastability.
-2.  **`alu.sv`**: A 32-bit Math Core with a persistent Accumulator (MAC unit) along with other basic operations.
-3.  **`spi_transmitter.sv`**: Serializes results to MISO, featuring edge detection mechanism to prevent bit-shift errors.
-4.  **`top.sv`**: Manages the handshake signals and single-cycle load pulses.
 
-## Instruction Set (ISA)
-The system accepts 24-bit packets: `[Opcode (8)] [Operand A (8)] [Operand B (8)]`
+The system is composed of four primary SystemVerilog modules:
 
-| OpCode | Mnemonic | Operation | Description |
-| :--- | :--- | :--- | :--- |
-| `0x01` | **ADD** | `A + B` | Basic Addition |
-| `0x02` | **MUL** | `A * B` | Unsigned Multiplication |
-| `0x05` | **MAC** | `Acc += (A * B)` | **Multiply-Accumulate** (MAC) |
-| `0x06` | **CLR** | `Acc = 0` | Clear Accumulator |
-| `0x07` | **RD_ACC** | `MISO = Acc` | Read Accumulator Value |
-| `0x08` | **RD_LAST**| `MISO = Result` | Read Last Calculation |
+1. **[`spi_receiver.sv`](.rtl/spi_receiver.sv)**
+   Deserializes MOSI data using triple flip-flop synchronizers to mitigate metastability.
+
+2. **[`alu.sv`](.rtl/alu.sv)**
+   A 32-bit arithmetic core featuring a persistent accumulator supporting MAC operations along with basic arithmetic functions.
+
+3. **[`spi_transmitter.sv`](.rtl/spi_transmitter.sv)**
+   Serializes computation results onto MISO, incorporating edge-detection logic to prevent bit-shift errors.
+
+4. **[`top.sv`](.rtl/top.sv)**
+   Top-level module managing control flow, handshaking and single-cycle load pulses.
+
+---
+
+## Instruction Set Architecture (ISA)
+
+The system accepts fixed 24-bit SPI packets structured as:
+
+`[ Opcode (8 bits) | Operand A (8 bits) | Operand B (8 bits) ]`
+
+| Opcode | Mnemonic | Operation        | Description             |
+| :----: | :------: | :--------------- | :---------------------- |
+| `0x01` |    ADD   | `A + B`          | Unsigned addition       |
+| `0x02` |    MUL   | `A * B`          | Unsigned multiplication |
+| `0x05` |    MAC   | `Acc += (A * B)` | Multiply-Accumulate     |
+| `0x06` |    CLR   | `Acc = 0`        | Clear accumulator       |
+| `0x07` |  RD_ACC  | `MISO = Acc`     | Read accumulator value  |
+| `0x08` |  RD_LAST | `MISO = Result`  | Read last computation   |
+
+---
 
 ## Hardware Setup
-**Board:** Digilent Basys 3 (Artix-7 XC7A35T)
-**Port:** PMOD Header JA (Top Row)
 
-| Signal | Basys 3 Pin | PMOD Pin | ESP32 Pin |
-| :--- | :--- | :--- | :--- |
-| **SCK** | `J1` | Pin 1 | GPIO 18 |
-| **MOSI** | `L2` | Pin 2 | GPIO 23 |
-| **MISO** | `J2` | Pin 3 | GPIO 19 |
-| **CS** | `G2` | Pin 4 | GPIO 5 |
-| **GND** | `GND` | Pin 5 | GND |
+**FPGA Board:** Digilent Basys 3 (Artix-70
+**SPI Interface:** PMOD Header JA (Top row)
+
+| Signal | Basys 3 Pin | PMOD Pin | ESP32 GPIO |
+| :----- | :---------- | :------- | :--------- |
+| SCK    | J1          | Pin 1    | GPIO 18    |
+| MOSI   | L2          | Pin 2    | GPIO 23    |
+| MISO   | J2          | Pin 3    | GPIO 19    |
+| CS     | G2          | Pin 4    | GPIO 5     |
+| GND    | GND         | Pin 5    | GND        |
+
+---
 
 ## Simulation Verification
-The design includes a self-checking testbench (`tb_spi_coprocessor.sv`) that validates:
-* 100% of Opcodes.
-* Timing of the SPI Shift Register.
 
-## Hardware Verification 
-The bitstream was deployed to Basys 3 board. The physical results were verified by observing the onboard LEDs
+A SystemVerilog testbench [`tb_spi_coprocessor.sv`](.rtl/tb_spi_coprocessor.sv) was developed to validate:
 
-Verification Results
-During the test run, values were changed in the MAC operation and the result was confirmed via the LEDs and the Serial Monitor:
+* Functional correctness of all supported opcodes
+* Timing and alignment of the SPI shift register
 
-Case 1: The LEDs displayed 0010 1010 (Decimal 42).
+---
 
-Case 2: The LEDs displayed 0011 0110 (Decimal 54).
+## Hardware Verification
 
-The system maintained data integrity over a sustained 1MHz SPI clock without glitches, confirming that the CDC (Clock Domain Crossing) logic is functioning correctly.
+The generated bitstream was deployed onto the Basys 3 FPGA. Functional verification was performed using the onboard LEDs and ESP32 serial output.
 
-## How To Run
+**Verification Results:**
 
-FPGA Setup (Vivado) -
+* Case 1: LED output `0010 1010` (decimal 42)
+* Case 2: LED output `0011 0110` (decimal 54)
 
-Open Project: Create a new project in Vivado targeting the Artix-7 XC7A35T-1CPG236C (Basys 3).
+The system maintained data integrity during sustained operation at a **1 MHz SPI clock**, confirming correct CDC implementation and stable cross-domain communication.
 
-Add Sources: Import all .sv files from the hdl/ directory.
+---
 
-Constraints: Add the basys3_master.xdc from the constraints/ folder.
+## How to Run
 
-Generate Bitstream: Click Generate Bitstream, then use the Hardware Manager to program the board
+### FPGA Setup (Vivado)
 
-Software Setup (Arduino IDE) - 
+1. Create a new Vivado project targeting **XC7A35T-1CPG236C**.
+2. Add all `.sv` files from the `hdl/` directory.
+3. Add `basys3_master.xdc` from the [`constraints/`](./constraints) directory.
+4. Generate the bitstream and program the board using Hardware Manager.
 
-Library: Ensure you have the ESP32 board package installed.
+### Software Setup (Arduino IDE)
 
-Upload: Open software/esp32_master.ino, select your ESP32 board/port and click Upload.
+1. Install the ESP32 board package.
+2. Open [`software/esp32_master.ino`](.software/esp32_master.ino).
+3. Select the appropriate board and port, then upload.
+4. Open the Serial Monitor at **115200 baud**.
 
-Monitor: Open the Serial Monitor and set the baud rate to 115200.
+### Folder Structure 
 
-
+spi-fpga-alu/
+├── hdl/
+│   ├── spi_receiver.sv        # SPI MOSI deserializer with CDC handling
+│   ├── alu.sv                 # 32-bit ALU with MAC accumulator
+│   ├── spi_transmitter.sv     # SPI MISO serializer
+│   └── top.sv                 # Top-level integration module
+├── tb/
+│   └── tb_spi_coprocessor.sv  # Self-checking SystemVerilog testbench
+├── constraints/
+│   └── basys3_master.xdc      # FPGA pin constraints
+├── software/
+│   └── esp32_master.ino       # ESP32 SPI master firmware
+├── docs/
+│   └── verification.md        # Linked waveforms and hardware verification notes
+└── README.md
