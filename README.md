@@ -60,7 +60,7 @@ The system accepts fixed 24-bit SPI packets structured as:
 
 ## Simulation Verification
 
-A SystemVerilog testbench [`tb_spi_coprocessor.sv`](./rtl/tb_spi_coprocessor.sv) was developed to validate:
+A SystemVerilog testbench [`tb_spi_coprocessor.sv`](./sim/tb_spi_coprocessor.sv) was developed to validate:
 
 * Functional correctness of all supported opcodes
 * Timing and alignment of the SPI shift register
