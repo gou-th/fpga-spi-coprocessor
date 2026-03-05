@@ -10,7 +10,8 @@ module spi_transmitter(
 );
 
     logic [2:0] sck_sync, cs_sync;
-    
+
+    //CDC synchronizers of asynchronous signals 
     always_ff @(posedge clk) begin
         sck_sync<={sck_sync[1:0],sck_in};
         cs_sync <={cs_sync[1:0],cs_in};
@@ -27,12 +28,14 @@ module spi_transmitter(
             wait_first_fall<=0;
         end
         else begin
+            //Latch the ALU result into the shift register
             if (load) begin
                 shift_reg<=data;
-                miso<=data[31]; 
+                miso<=data[31]; //MSB
                 count<=1;
                 wait_first_fall<=1; 
             end
+            //Shift the data out on SCK falling edge 
             else if ((cs_sync[1]==0) && (sck_sync[2:1]==2'b10) && (count!=0) && (count<32)) begin
                 
                 if (wait_first_fall) begin
