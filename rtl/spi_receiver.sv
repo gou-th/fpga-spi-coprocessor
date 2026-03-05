@@ -10,7 +10,8 @@ module spi_receiver(
 );
 
     logic [2:0] sck_sync,mosi_sync,cs_sync;
-    
+
+    //3-stage CDC synchronizers for asynchronous SPI inputs 
     always_ff @(posedge clk) begin
         sck_sync <={sck_sync[1:0],sck_in};
         mosi_sync<={mosi_sync[1:0],mosi_in};
@@ -25,8 +26,10 @@ module spi_receiver(
         if (cs_sync[1]) begin
             count<=0;
         end 
+        //Sample MOSI on rising edge of SCK
         else if (sck_sync[2:1]==2'b01) begin
             shift_reg<={shift_reg[22:0],mosi_sync[2]};
+            //Condition to check if the full 24-bit packet is received
             if (count==6'd23) begin
                 pkt<={shift_reg[22:0],mosi_sync[2]};
                 ready<=1;
